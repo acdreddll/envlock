@@ -1,0 +1,30 @@
+# envlock schema file
+# Place this file at the root of your project as envlock.yaml
+
+version: "1"
+
+vars:
+  DATABASE_URL:
+    description: "Primary database connection string (e.g. postgres://user:pass@host/db)"
+    required: true
+
+  REDIS_URL:
+    description: "Redis connection string used for caching and sessions"
+    required: false
+    default: "redis://localhost:6379"
+
+  LOG_LEVEL:
+    description: "Application log verbosity"
+    required: false
+    default: "info"
+    pattern: "^(debug|info|warn|error)$"
+
+  PORT:
+    description: "HTTP server listen port"
+    required: false
+    default: "8080"
+    pattern: "^[0-9]+$"
+
+  SECRET_KEY:
+    description: "Secret key used for signing tokens — never commit the real value"
+    required: true
