@@ -51,18 +51,10 @@ func Execute() {
 }
 
 // collectEnv reads environment variables from the process environment.
-// If an envFile path is provided, it parses and merges those values.
+// If an envFile path is provided, it parses and merges those values,
+// with the env file values taking precedence over process environment values.
 func collectEnv(envFile string) map[string]string {
-	env := make(map[string]string)
-
-	for _, e := range os.Environ() {
-		for i := 0; i < len(e); i++ {
-			if e[i] == '=' {
-				env[e[:i]] = e[i+1:]
-				break
-			}
-		}
-	}
+	env := parseProcessEnv()
 
 	if envFile != "" {
 		parsed, err := parseDotEnv(envFile)
@@ -75,5 +67,20 @@ func collectEnv(envFile string) map[string]string {
 		}
 	}
 
+	return env
+}
+
+// parseProcessEnv returns a map of key-value pairs from the current process
+// environment by splitting each entry on the first '=' character.
+func parseProcessEnv() map[string]string {
+	env := make(map[string]string)
+	for _, e := range os.Environ() {
+		for i := 0; i < len(e); i++ {
+			if e[i] == '=' {
+				env[e[:i]] = e[i+1:]
+				break
+			}
+		}
+	}
 	return env
 }
