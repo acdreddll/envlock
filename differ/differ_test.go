@@ -72,6 +72,13 @@ func TestCompare_NoChanges(t *testing.T) {
 	}
 }
 
+func TestCompare_EmptySchemas(t *testing.T) {
+	d := differ.Compare(makeSchema(nil), makeSchema(nil))
+	if d.HasChanges() {
+		t.Errorf("expected no changes for two empty schemas, got: %s", d.Summary())
+	}
+}
+
 func TestDiff_Summary(t *testing.T) {
 	d := &differ.Diff{
 		Added:   []schema.EnvVar{{Key: "A"}, {Key: "B"}},
@@ -80,6 +87,15 @@ func TestDiff_Summary(t *testing.T) {
 	}
 	got := d.Summary()
 	want := "+2 added, -1 removed, ~1 changed"
+	if got != want {
+		t.Errorf("Summary() = %q, want %q", got, want)
+	}
+}
+
+func TestDiff_Summary_NoChanges(t *testing.T) {
+	d := &differ.Diff{}
+	got := d.Summary()
+	want := "+0 added, -0 removed, ~0 changed"
 	if got != want {
 		t.Errorf("Summary() = %q, want %q", got, want)
 	}
