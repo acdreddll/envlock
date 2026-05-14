@@ -101,3 +101,19 @@ func TestExport_SortedOutput(t *testing.T) {
 		t.Errorf("expected Z_VAR last, got: %s", lines[2])
 	}
 }
+
+// TestExport_EmptyReport verifies that exporting an empty resolved map
+// produces no output and does not return an error.
+func TestExport_EmptyReport(t *testing.T) {
+	formats := []exporter.Format{
+		exporter.FormatDotEnv,
+		exporter.FormatExport,
+		exporter.FormatJSON,
+	}
+	for _, fmt := range formats {
+		var buf strings.Builder
+		if err := exporter.Export(&buf, makeReport(nil), fmt); err != nil {
+			t.Errorf("format %q: unexpected error for empty report: %v", fmt, err)
+		}
+	}
+}
