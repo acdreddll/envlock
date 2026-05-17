@@ -76,3 +76,20 @@ func TestRender_InvalidTemplate(t *testing.T) {
 		t.Error("expected error for invalid template")
 	}
 }
+
+func TestRender_MultipleMissingRequired(t *testing.T) {
+	s := makeSchema([]schema.VarEntry{
+		{Key: "DB_HOST", Required: true},
+		{Key: "DB_PASS", Required: true},
+	})
+	result, err := templater.Render("${DB_HOST}:${DB_PASS}", map[string]string{}, s)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(result.Missing) != 2 {
+		t.Errorf("expected 2 missing vars, got %v", result.Missing)
+	}
+	if result.Output != ":" {
+		t.Errorf("expected ':', got %q", result.Output)
+	}
+}
