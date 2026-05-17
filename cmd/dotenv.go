@@ -47,6 +47,10 @@ func parseDotEnv(path string) (map[string]string, error) {
 			return nil, fmt.Errorf("line %d: empty key", lineNum)
 		}
 
+		if strings.ContainsAny(key, " \t") {
+			return nil, fmt.Errorf("line %d: key %q contains whitespace", lineNum, key)
+		}
+
 		env[key] = val
 	}
 
