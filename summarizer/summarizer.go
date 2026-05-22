@@ -72,3 +72,16 @@ func SortedTags(s Summary) []string {
 	sort.Strings(keys)
 	return keys
 }
+
+// TopGroups returns up to n group names ordered by their entry count (descending).
+// If n <= 0 or n exceeds the number of groups, all groups are returned.
+func TopGroups(s Summary, n int) []string {
+	keys := SortedGroups(s)
+	sort.SliceStable(keys, func(i, j int) bool {
+		return s.Groups[keys[i]] > s.Groups[keys[j]]
+	})
+	if n <= 0 || n > len(keys) {
+		return keys
+	}
+	return keys[:n]
+}
