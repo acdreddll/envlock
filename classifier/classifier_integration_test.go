@@ -45,3 +45,15 @@ func TestClassify_MixedSchema(t *testing.T) {
 		}
 	}
 }
+
+func TestClassify_EmptySchema(t *testing.T) {
+	s := schema.Schema{
+		Vars: []schema.EnvVar{},
+	}
+
+	results := classifier.Classify(s)
+
+	if len(results) != 0 {
+		t.Errorf("expected 0 results for empty schema, got %d", len(results))
+	}
+}
