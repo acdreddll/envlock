@@ -72,3 +72,20 @@ func TestEncode_SensitiveOnlyFullSchema(t *testing.T) {
 		}
 	}
 }
+
+// TestEncode_MissingSensitiveKey verifies that encoding returns an error when
+// a sensitive (required) key is absent from the provided environment map.
+func TestEncode_MissingSensitiveKey(t *testing.T) {
+	s := makeSchema(
+		ev("REQUIRED_SECRET", true),
+	)
+	env := map[string]string{} // REQUIRED_SECRET intentionally missing
+
+	_, err := encoder.Encode(s, env, encoder.Options{
+		Format:        encoder.FormatBase64,
+		SensitiveOnly: false,
+	})
+	if err == nil {
+		t.Fatal("expected an error for missing sensitive key, got nil")
+	}
+}
