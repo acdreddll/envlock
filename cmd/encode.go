@@ -42,10 +42,14 @@ func runEncode(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("encoding: %w", err)
 	}
 
-	if outputFormat == "json" {
+	switch outputFormat {
+	case "json":
 		return printEncodeJSON(results)
+	case "text":
+		return printEncodeText(results)
+	default:
+		return fmt.Errorf("unknown output format %q: must be \"text\" or \"json\"", outputFormat)
 	}
-	return printEncodeText(results)
 }
 
 func printEncodeText(results []encoder.Result) error {
