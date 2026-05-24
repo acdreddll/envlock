@@ -83,3 +83,24 @@ func TestInterpolate_SkipsMissingKeys(t *testing.T) {
 		t.Errorf("unexpected key: %s", results[0].Key)
 	}
 }
+
+func TestInterpolate_UsesDefaultWhenEnvMissing(t *testing.T) {
+	s := makeSchema(ev("TIMEOUT", "30s"))
+	// TIMEOUT is not set in env; interpolator should fall back to the schema default.
+	env := map[string]string{}
+
+	results, err := interpolator.Interpolate(s, env)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(results) != 1 {
+		t.Fatalf("expected 1 result, got %d", len(results))
+	}
+	r := results[0]
+	if r.Key != "TIMEOUT" {
+		t.Errorf("unexpected key: %s", r.Key)
+	}
+	if r.Resolved != "30s" {
+		t.Errorf("expected default value %q, got %q", "30s", r.Resolved)
+	}
+}
