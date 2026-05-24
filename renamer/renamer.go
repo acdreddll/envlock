@@ -18,13 +18,23 @@ type RenameResult struct {
 // validKey matches environment variable naming conventions.
 var validKey = regexp.MustCompile(`^[A-Z_][A-Z0-9_]*$`)
 
+// validateKey returns an error if the given key does not conform to
+// environment variable naming conventions (uppercase letters, digits,
+// and underscores, not starting with a digit).
+func validateKey(key string) error {
+	if !validKey.MatchString(key) {
+		return fmt.Errorf("invalid key name %q: must match [A-Z_][A-Z0-9_]*", key)
+	}
+	return nil
+}
+
 // Rename renames a variable key within the schema, returning a new schema and
 // a result describing what happened. The original schema is not mutated.
 func Rename(s schema.Schema, oldKey, newKey string) (schema.Schema, RenameResult, error) {
 	result := RenameResult{OldKey: oldKey, NewKey: newKey}
 
-	if !validKey.MatchString(newKey) {
-		return s, result, fmt.Errorf("invalid key name %q: must match [A-Z_][A-Z0-9_]*", newKey)
+	if err := validateKey(newKey); err != nil {
+		return s, result, err
 	}
 
 	// Check new key does not already exist.
